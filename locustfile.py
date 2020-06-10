@@ -1,10 +1,10 @@
 import random
 
-from locust import HttpUser, between, task, TaskSet
+from locust import HttpUser, between, task, TaskSet, constant
 
 AUTH_MAP = {
     1: {
-        'username': 'Juan',
+        'username': 'Juan Cruz',
         'password': '123456'
     },
     2: {
@@ -22,7 +22,7 @@ AUTH_MAP = {
 }
 
 USER_MAP = {
-    1: 'Juan',
+    1: 'Juan Cruz',
     2: 'Mariano',
     3: 'Lautaro',
     4: 'Matias'
@@ -39,7 +39,7 @@ class TransactionTasks(TaskSet):
         transaction_body = {
             'userFrom': USER_MAP[random.randint(1, 4)],
             'userTo': USER_MAP[random.randint(1, 4)],
-            'amount': random.randint(0, 20)
+            'amount': 0.1
         }
         self.client.post("/transactions", json=transaction_body)
 
