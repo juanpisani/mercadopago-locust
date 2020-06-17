@@ -29,13 +29,25 @@ USER_MAP = {
 }
 
 
+class AuthTasks(TaskSet):
+    wait_time = between(0, 1)
+
+    @task
+    def auth(self):
+        username_password = AUTH_MAP[random.randint(1, 4)]
+        self.client.post('/auth', json=username_password)
+
+
 class TransactionTasks(TaskSet):
     wait_time = between(0, 1)
 
     @task
+    def get_history(self):
+        username = USER_MAP[random.randint(1, 4)]
+        self.client.get('/transactions/' + username)
+
+    @task
     def create_transactions(self):
-        username_password = AUTH_MAP[random.randint(1, 4)]
-        self.client.post('/auth', json=username_password)
         transaction_body = {
             'userFrom': USER_MAP[random.randint(1, 4)],
             'userTo': USER_MAP[random.randint(1, 4)],
@@ -43,10 +55,26 @@ class TransactionTasks(TaskSet):
         }
         self.client.post("/transactions", json=transaction_body)
 
-    def on_stop(self):
-        self.interrupt()
+
+class BalanceTasks(TaskSet):
+    wait_time = between(0, 1)
+
+    @task
+    def get_balance(self):
+        username = USER_MAP[random.randint(1, 4)]
+        self.client.get('users/balance/' + username)
 
 
-class WebTest(HttpUser):
-    wait_time = between(5, 120)
+class WebAuth(HttpUser):
+    weight = 1
+    tasks = {AuthTasks}
+
+
+class WebTransactions(HttpUser):
+    weight = 6
     tasks = {TransactionTasks}
+
+
+class WebBalance(HttpUser):
+    weight = 3
+    tasks = {BalanceTasks}
