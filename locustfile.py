@@ -1,32 +1,6 @@
 import random
 
-from locust import HttpUser, between, task, TaskSet, constant
-
-AUTH_MAP = {
-    1: {
-        'username': 'Juan Cruz',
-        'password': '123456'
-    },
-    2: {
-        'username': 'Mariano',
-        'password': '123456'
-    },
-    3: {
-        'username': 'Lautaro',
-        'password': '123456'
-    },
-    4: {
-        'username': 'Matias',
-        'password': '123456'
-    }
-}
-
-USER_MAP = {
-    1: 'Juan Cruz',
-    2: 'Mariano',
-    3: 'Lautaro',
-    4: 'Matias'
-}
+from locust import HttpUser, between, task, TaskSet
 
 
 class AuthTasks(TaskSet):
@@ -34,7 +8,10 @@ class AuthTasks(TaskSet):
 
     @task
     def auth(self):
-        username_password = AUTH_MAP[random.randint(1, 4)]
+        username_password = {
+            'username': 'username' + str(random.randint(1, 100)),
+            'password': '123456'
+        }
         self.client.post('/auth', json=username_password)
 
 
@@ -43,14 +20,18 @@ class TransactionTasks(TaskSet):
 
     @task
     def get_history(self):
-        username = USER_MAP[random.randint(1, 4)]
+        username = 'username' + str(random.randint(1, 100))
         self.client.get('/transactions/' + username)
 
     @task
     def create_transactions(self):
+        from_user = str(random.randint(1, 100))
+        to_user = str(random.randint(1, 100))
+        while from_user == to_user:
+            to_user = str(random.randint(1, 100))
         transaction_body = {
-            'userFrom': USER_MAP[random.randint(1, 4)],
-            'userTo': USER_MAP[random.randint(1, 4)],
+            'userFrom': 'username' + from_user,
+            'userTo': 'username' + to_user,
             'amount': 0.1
         }
         self.client.post("/transactions", json=transaction_body)
@@ -61,8 +42,8 @@ class BalanceTasks(TaskSet):
 
     @task
     def get_balance(self):
-        username = USER_MAP[random.randint(1, 4)]
-        self.client.get('users/balance/' + username)
+        username = 'username' + str(random.randint(1, 100))
+        self.client.get('/users/balance/' + username)
 
 
 class WebAuth(HttpUser):
