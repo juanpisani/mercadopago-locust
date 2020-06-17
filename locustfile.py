@@ -9,7 +9,7 @@ class AuthTasks(TaskSet):
     @task
     def auth(self):
         username_password = {
-            'username': 'username' + str(random.randint(1, 100)),
+            'username': 'username' + str(random.randint(1, 10000)),
             'password': '123456'
         }
         self.client.post('/auth', json=username_password)
@@ -20,19 +20,19 @@ class TransactionTasks(TaskSet):
 
     @task
     def get_history(self):
-        username = 'username' + str(random.randint(1, 100))
+        username = 'username' + str(random.randint(1, 10000))
         self.client.get('/transactions/' + username)
 
     @task
     def create_transactions(self):
-        from_user = str(random.randint(1, 100))
-        to_user = str(random.randint(1, 100))
+        from_user = str(random.randint(1, 10000))
+        to_user = str(random.randint(1, 10000))
         while from_user == to_user:
-            to_user = str(random.randint(1, 100))
+            to_user = str(random.randint(1, 10000))
         transaction_body = {
             'userFrom': 'username' + from_user,
             'userTo': 'username' + to_user,
-            'amount': 0.1
+            'amount': random.random()
         }
         self.client.post("/transactions", json=transaction_body)
 
@@ -42,7 +42,7 @@ class BalanceTasks(TaskSet):
 
     @task
     def get_balance(self):
-        username = 'username' + str(random.randint(1, 100))
+        username = 'username' + str(random.randint(1, 10000))
         self.client.get('/users/balance/' + username)
 
 
