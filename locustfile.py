@@ -32,7 +32,7 @@ class TransactionTasks(TaskSet):
         transaction_body = {
             'userFrom': 'username' + from_user,
             'userTo': 'username' + to_user,
-            'amount': random.random()
+            'amount': round(random.random(), 2)
         }
         self.client.post("/transactions", json=transaction_body)
 
