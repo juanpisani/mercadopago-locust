@@ -2,14 +2,14 @@ import random
 
 from locust import HttpUser, between, task, TaskSet
 
-
+maxUser = 1000
 class AuthTasks(TaskSet):
     wait_time = between(0, 1)
 
     @task
     def auth(self):
         username_password = {
-            'username': 'username' + str(random.randint(1, 10000)),
+            'username': 'user' + str(random.randint(1, maxUser)),
             'password': '123456'
         }
         self.client.post('/auth', json=username_password)
@@ -20,18 +20,18 @@ class TransactionTasks(TaskSet):
 
     @task
     def get_history(self):
-        username = 'username' + str(random.randint(1, 10000))
+        username = 'user' + str(random.randint(1, maxUser))
         self.client.get('/transactions/' + username)
 
     @task
     def create_transactions(self):
-        from_user = str(random.randint(1, 10000))
-        to_user = str(random.randint(1, 10000))
+        from_user = str(random.randint(1, maxUser))
+        to_user = str(random.randint(1, maxUser))
         while from_user == to_user:
-            to_user = str(random.randint(1, 10000))
+            to_user = str(random.randint(1, maxUser))
         transaction_body = {
-            'userFrom': 'username' + from_user,
-            'userTo': 'username' + to_user,
+            'userFrom': 'user' + from_user,
+            'userTo': 'user' + to_user,
             'amount': round(random.random(), 2)
         }
         self.client.post("/transactions", json=transaction_body)
@@ -42,7 +42,7 @@ class BalanceTasks(TaskSet):
 
     @task
     def get_balance(self):
-        username = 'username' + str(random.randint(1, 10000))
+        username = 'user' + str(random.randint(1, maxUser))
         self.client.get('/users/balance/' + username)
 
 
